@@ -1,0 +1,32 @@
+
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/.env
+.env
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
+
+# Local environment and editor files
+.vscode/
+.DS_Store
+# Never upload environment files or secrets
+**/.env
+**/.env.*
+**/*credentials*
+**/*secrets*
+**/*.pem
+**/*.key
+
+# Python virtual environments and caches
+**/venv/
+**/.venv/
+**/__pycache__/
+**/*.pyc
+
+# Node dependencies and generated builds
+**/node_modules/
+**/dist/
