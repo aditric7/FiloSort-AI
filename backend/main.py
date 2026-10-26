@@ -16,10 +16,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+   allow_origins=[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://filosort-ai-1.onrender.com",
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -127,14 +128,55 @@ Files:
             "message": "Suggestions only. No files were changed.",
         }
 
-    except requests.RequestException as exc:
-        raise HTTPException(
-            status_code=503,
-            detail=(
-                "Could not reach Ollama. Check that Ollama is running "
-                "and the model is installed."
+        except requests.RequestException:
+        folder_map = {
+            ".pdf": ("Documents", "Documents"),
+            ".doc": ("Documents", "Documents"),
+            ".docx": ("Documents", "Documents"),
+            ".txt": ("Documents", "Documents"),
+            ".jpg": ("Images", "Images"),
+            ".jpeg": ("Images", "Images"),
+            ".png": ("Images", "Images"),
+            ".gif": ("Images", "Images"),
+            ".mp3": ("Audio", "Audio"),
+            ".wav": ("Audio", "Audio"),
+            ".mp4": ("Videos", "Videos"),
+            ".mov": ("Videos", "Videos"),
+            ".py": ("Code", "Code"),
+            ".js": ("Code", "Code"),
+            ".jsx": ("Code", "Code"),
+            ".zip": ("Archives", "Archives"),
+            ".rar": ("Archives", "Archives"),
+        }
+
+        suggestions = []
+
+        for item in request.files:
+            extension = item.extension.lower()
+            category, folder = folder_map.get(
+                extension,
+                ("Other", "Other"),
+            )
+
+            suggestions.append({
+                "file_name": item.name,
+                "category": category,
+                "suggested_folder": folder,
+                "reason": (
+                    "Rule-based suggestion based on file extension; "
+                    "Ollama is unavailable."
+                ),
+            })
+
+        return {
+            "model": "rule-based-fallback",
+            "suggestions": suggestions,
+            "applied": False,
+            "message": (
+                "Fallback suggestions only. "
+                "No files were changed."
             ),
-        ) from exc
+        }
     except (ValueError, json.JSONDecodeError) as exc:
         raise HTTPException(
             status_code=502,
