@@ -128,7 +128,7 @@ Files:
             "message": "Suggestions only. No files were changed.",
         }
 
-        except requests.RequestException:
+    except requests.RequestException:
         folder_map = {
             ".pdf": ("Documents", "Documents"),
             ".doc": ("Documents", "Documents"),
@@ -177,6 +177,7 @@ Files:
                 "No files were changed."
             ),
         }
+    
     except (ValueError, json.JSONDecodeError) as exc:
         raise HTTPException(
             status_code=502,
